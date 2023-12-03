@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -43,6 +44,37 @@ func find_int_name(s string){
 
 }
 
+func part2(s string) {
+	number_map := map[string]string{
+		"one":"1",
+		"two":"2",
+		"three":"3",
+		"four":"4",
+		"five":"5",
+		"six":"6",
+		"seven":"7",
+		"eight":"8",
+		"nine":"9"	}
+	idx_locations := [][]string{}
+
+	for word, number := range number_map {
+		if found_word := strings.Contains(s, word); found_word == true {
+			results := []string{strconv.Itoa(strings.Index(s, word)),number} // Get index and number for the word
+			idx_locations = append(idx_locations, [][]string{results}... )
+		}
+		if found_number := strings.Contains(s, number); found_number == true {
+			results := []string{} // Get index and number for the word
+			results = append(results, strconv.Itoa(strings.Index(s, number)),number)
+			idx_locations = append(idx_locations, [][]string{results}...)
+		}
+	}
+
+	sort.Slice(idx_locations, func(i, j int) bool {
+		return idx_locations[i][0] < idx_locations[j][0]
+	})
+	fmt.Println(idx_locations)
+}
+
 func main() {
 	file, err := os.Open("test.txt")
 	if err != nil {
@@ -55,14 +87,15 @@ func main() {
 	total := 0
 	// Scan the file line by line
 	for file_scanner.Scan() {
-		first_num_idx, first_num, _ := find_int(file_scanner.Text())
-		first_word_idx, first_word := find_int_name(file_scanner.Text()) // TODO: Change word to int
+		_, first_num, _ := find_int(file_scanner.Text())
 		_, second_num, _ := find_int(reverse_string(file_scanner.Text()))
 		result, _ := strconv.Atoi(first_num + second_num)
 		total = total + result
 		fmt.Println(result)
 		//find_int_name(file_scanner.Text())
+		part2(file_scanner.Text())
 	}
-	fmt.Println(total)
+	//fmt.Println(total)
+
 	
 }
