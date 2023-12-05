@@ -10,12 +10,16 @@ import (
 
 func part1(s string) {
 	colon_idx := strings.Index(s, ":")
-	//game_num := s[5:colon_idx]
+	game_num := s[5:colon_idx]
 	//fmt.Println(game_num)
 
 	restofstring := s[colon_idx+2 : len(s)]
-	set_num := strings.Count(restofstring, ";") + 1
-	fmt.Println(set_num)
+	for _, set := range strings.Split(restofstring, ";") {
+		for _, draw := range strings.Split(set, ",") {
+			results := strings.Split(strings.TrimSpace(draw), " ")
+			fmt.Println("Game ID: " + game_num + " Number: " + results[0] + " Color: " + results[1])
+		}
+	}
 
 }
 
