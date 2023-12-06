@@ -15,15 +15,28 @@ func (this Point) checkPoint(d Point) Point {
 	return Point{this.X + d.X, this.Y + d.Y}
 }
 
+func isCharNumber(s rune) bool {
+	if s > 47 && s < 58 {
+		return true
+	}
+	return false
+}
+
 func part1(file []byte) {
 	symbols := map[Point]string{}
-	parts := map[Point]string{}
+	parts := map[Point]string{} //TODO: Find start and finish for the number
 	for y, s := range strings.Fields(string(file)) {
 		for x, r := range s {
-			if r != 46 && (r < 48 || r > 57) {
+			if r != 46 && (!isCharNumber(r)) {
 				symbols[Point{x, y}] = string(r)
 			}
-			if r > 47 && r < 58 {
+			if isCharNumber(r) {
+				start := x
+				end := x
+				for i := x + 1; isCharNumber(rune(s[i])); i++ {
+					end++
+				}
+				contents := 
 				parts[Point{x, y}] = string(r)
 			}
 		}
@@ -35,10 +48,7 @@ func part1(file []byte) {
 		{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1},
 	}
 	found := map[Point]string{}
-	//TODO: For each symbol coordinate, search around and grab coordinate
-	// if that coordinate exists in the parts map
 	for k, _ := range symbols {
-		//fmt.Printf("Symbol Point: %v:\n", k)
 		for _, d := range directions {
 			check := Point{k.X, k.Y}.checkPoint(d)
 
@@ -48,16 +58,28 @@ func part1(file []byte) {
 		}
 	}
 	fmt.Println(found)
-	y := 0
-	x := -1
-	for k, _ := range found {
-		fmt.Println(k)
+	
+	for k, origin := range found {
+		y := 0
+		x_left := -1
+		x_right := 1
+		fmt.Printf("Found: %v\n",k)
 		//Walk Left
-
-		//for x := -1; test := parts[k.checkPoint(Point{x,y})]; x--
-		check := k.checkPoint(Point{x, y})
-		fmt.Println(check)
-		x--
+		isNumberLeft := true
+		isNumberRight := true
+		for isNumberLeft == true || isNumberRight == true {
+			check_left := k.checkPoint(Point{x_left, y})
+			check_right := k.checkPoint(Point{x_right, y})
+			if s, exists := parts[check_left]; exists && isNumberLeft {
+				origin = s + origin
+				x_left--
+			} else { isNumberLeft = false }
+			if s, exists := parts[check_right]; exists && isNumberRight{
+				origin = origin + s
+				x_right++
+			} else {isNumberRight = false}
+		}		
+		fmt.Println(origin)
 	}
 
 }
