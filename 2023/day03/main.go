@@ -31,12 +31,12 @@ func part1(file []byte) {
 				symbols[Point{x, y}] = string(r)
 			}
 			if isCharNumber(r) {
-				start := x
-				end := x
+				//start := x
+				/* end := x
 				for i := x + 1; isCharNumber(rune(s[i])); i++ {
 					end++
-				}
-				contents := 
+				} */
+				//contents :=
 				parts[Point{x, y}] = string(r)
 			}
 		}
@@ -58,12 +58,12 @@ func part1(file []byte) {
 		}
 	}
 	fmt.Println(found)
-	
+	numbers := map[string]struct{}{}
 	for k, origin := range found {
 		y := 0
 		x_left := -1
 		x_right := 1
-		fmt.Printf("Found: %v\n",k)
+		fmt.Printf("Found: %v\n", k)
 		//Walk Left
 		isNumberLeft := true
 		isNumberRight := true
@@ -73,14 +73,21 @@ func part1(file []byte) {
 			if s, exists := parts[check_left]; exists && isNumberLeft {
 				origin = s + origin
 				x_left--
-			} else { isNumberLeft = false }
-			if s, exists := parts[check_right]; exists && isNumberRight{
+			} else {
+				isNumberLeft = false
+			}
+			if s, exists := parts[check_right]; exists && isNumberRight {
 				origin = origin + s
 				x_right++
-			} else {isNumberRight = false}
-		}		
-		fmt.Println(origin)
+			} else {
+				isNumberRight = false
+			}
+		}
+		if _, exists := numbers[origin]; !exists {
+			numbers[origin] = struct{}{}
+		}
 	}
+	fmt.Println(numbers)
 
 }
 
