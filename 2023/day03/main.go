@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
 type Point struct {
 	X, Y int
+}
+
+type FoundPoint struct {
+	X, Y Point
 }
 
 func (this Point) checkPoint(d Point) Point {
@@ -24,25 +29,17 @@ func isCharNumber(s rune) bool {
 
 func part1(file []byte) {
 	symbols := map[Point]string{}
-	parts := map[Point]string{} //TODO: Find start and finish for the number
+	parts := map[Point]string{} 
 	for y, s := range strings.Fields(string(file)) {
 		for x, r := range s {
 			if r != 46 && (!isCharNumber(r)) {
 				symbols[Point{x, y}] = string(r)
 			}
 			if isCharNumber(r) {
-				//start := x
-				/* end := x
-				for i := x + 1; isCharNumber(rune(s[i])); i++ {
-					end++
-				} */
-				//contents :=
 				parts[Point{x, y}] = string(r)
 			}
 		}
 	}
-	fmt.Println(symbols)
-	fmt.Println(parts)
 
 	directions := []Point{
 		{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1},
@@ -57,16 +54,16 @@ func part1(file []byte) {
 			}
 		}
 	}
-	fmt.Println(found)
-	numbers := map[string]struct{}{}
+
+	numbers := map[FoundPoint]int{}
 	for k, origin := range found {
 		y := 0
 		x_left := -1
 		x_right := 1
-		fmt.Printf("Found: %v\n", k)
-		//Walk Left
 		isNumberLeft := true
 		isNumberRight := true
+		start := Point{}
+		end := Point{}
 		for isNumberLeft == true || isNumberRight == true {
 			check_left := k.checkPoint(Point{x_left, y})
 			check_right := k.checkPoint(Point{x_right, y})
@@ -82,13 +79,21 @@ func part1(file []byte) {
 			} else {
 				isNumberRight = false
 			}
+			start = check_left.checkPoint(Point{1,0})
+			end = check_right.checkPoint(Point{-1,0})
 		}
-		if _, exists := numbers[origin]; !exists {
-			numbers[origin] = struct{}{}
+		found_point := FoundPoint{start,end}
+		if _, exists := numbers[found_point]; !exists {
+			num, _ := strconv.Atoi(origin)
+			numbers[found_point] = int(num)
 		}
 	}
-	fmt.Println(numbers)
+	total := 0
+	for _, i := range numbers {
+		total += i 
+	}
 
+	fmt.Println(total)
 }
 
 func part2() {
@@ -96,7 +101,7 @@ func part2() {
 }
 
 func main() {
-	file, err := os.ReadFile("test.txt")
+	file, err := os.ReadFile("input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
