@@ -15,7 +15,7 @@ You barely have time to agree to this request when he brings up another. "While 
 The almanac (your puzzle input) lists all of the seeds that need to be planted. It also lists what type of soil to use with each kind of seed, what type of fertilizer to use with each kind of soil, what type of water to use with each kind of fertilizer, and so on. Every type of seed, soil, fertilizer and so on is identified with a number, but numbers are reused by each category - that is, soil 123 and fertilizer 123 aren't necessarily related to each other.
 
 For example:
-
+```
 seeds: 79 14 55 13
 
 seed-to-soil map:
@@ -49,6 +49,8 @@ temperature-to-humidity map:
 humidity-to-location map:
 60 56 37
 56 93 4
+```
+
 The almanac starts by listing which seeds need to be planted: seeds 79, 14, 55, and 13.
 
 The rest of the almanac contains a list of maps which describe how to convert numbers from a source category into numbers in a destination category. That is, the section that starts with seed-to-soil map: describes how to convert a seed number (the source) to a soil number (the destination). This lets the gardener and his team know which soil to use with which seeds, which water to use with which fertilizer, and so on.

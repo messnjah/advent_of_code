@@ -6,37 +6,48 @@ import (
 	"strings"
 )
 
+type Detail struct {
+	src int
+	dst int
+	length int
+}
+
+type Row struct {
+	details []Detail
+}
+
+type Maps map[string]Row
+
 func readLines(filename string) []string {
 	file, err := os.ReadFile(filename)
 	if err != nil {
 		return nil
 	}
-
 	return strings.Split(string(file), "\n")
 }
 
-func processFile(filename string) {
-	file, err := os.ReadFile(filename)
-	if err != nil {
-
+func isCharNumber(s byte) bool {
+	if s > 47 && s < 58 {
+		return true
 	}
-	test := strings.Split(string(file), "\r\n")
-	//test2 := strings.Split(string(file), ":")
-	for y, s := range test {
-		if strings.Contains(s, "\r") {
-			fmt.Println(s)
-		} else {
-			fmt.Printf("%v %v\n", y, s)
+	return false
+}
+
+func processFile(lines []string) {
+	alm := Maps{}
+	for line, s := range lines {
+		if line == 0 {
+			
 		}
-
+		if s[0] == 13 {
+			continue
+		} else {}
 	}
-	//fmt.Println(test2[1])
+	fmt.Println(alm)
 }
 
 func main() {
 	file := "test.txt"
 	lines := readLines(file)
-	fmt.Println(lines[0])
-
-	processFile(file)
+	processFile(lines)
 }
