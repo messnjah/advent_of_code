@@ -3,27 +3,24 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
 type Detail struct {
-	src int
-	dst int
+	src    int
+	dst    int
 	length int
 }
 
-type Row struct {
-	details []Detail
-}
-
-type Maps map[string]Row
+type Maps map[string]*[]Detail
 
 func readLines(filename string) []string {
 	file, err := os.ReadFile(filename)
 	if err != nil {
 		return nil
 	}
-	return strings.Split(string(file), "\n")
+	return strings.Split(strings.ReplaceAll(string(file), "\r\n", "\n"), "\n\n") //Windows :(
 }
 
 func isCharNumber(s byte) bool {
@@ -33,21 +30,52 @@ func isCharNumber(s byte) bool {
 	return false
 }
 
-func processFile(lines []string) {
+func processFile(lines []string) (Maps, []int) {
 	alm := Maps{}
+	seeds := []int{}
 	for line, s := range lines {
 		if line == 0 {
-			
-		}
-		if s[0] == 13 {
+			for _, num := range strings.Fields(strings.Split(s, ":")[1]) {
+				i, _ := strconv.Atoi(num)
+				seeds = append(seeds, i)
+			}
 			continue
-		} else {}
+		}
+		splitMap := strings.Split(s, "map:")
+		mapName := strings.TrimSpace(splitMap[0])
+		mapNumbers := strings.Split(strings.TrimSpace(splitMap[1]), "\n")
+		rows := []Detail{}
+		for _, row := range mapNumbers {
+			detail := Detail{}
+			numbers := strings.Fields(row)
+			detail.dst, _ = strconv.Atoi(numbers[0])
+			detail.src, _ = strconv.Atoi(numbers[1])
+			detail.length, _ = strconv.Atoi(numbers[2])
+			rows = append(rows, detail)
+		}
+		alm[mapName] = &rows
 	}
-	fmt.Println(alm)
+
+	return alm, seeds
+}
+
+func part1(alm Maps, seeds []int) {
+	//seedStart := 0
+	soilMap := alm["seed-to-soil"]
+	for _, detail := range *soilMap {
+		fmt.Println(detail)
+	}
+
+	fmt.Println(seeds)
+	for key := range alm {
+		fmt.Println(key)
+	}
 }
 
 func main() {
 	file := "test.txt"
 	lines := readLines(file)
-	processFile(lines)
+	alm, seeds := processFile(lines)
+	part1(alm, seeds)
+
 }
