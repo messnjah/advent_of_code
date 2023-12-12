@@ -13,6 +13,7 @@ type Detail struct {
 	length int
 	srcEnd int
 	dstEnd int
+	diff int
 }
 
 type Maps map[string]*[]Detail
@@ -23,13 +24,6 @@ func readLines(filename string) []string {
 		return nil
 	}
 	return strings.Split(strings.ReplaceAll(string(file), "\r\n", "\n"), "\n\n") //Windows :(
-}
-
-func isCharNumber(s byte) bool {
-	if s > 47 && s < 58 {
-		return true
-	}
-	return false
 }
 
 func processFile(lines []string) (Maps, []int) {
@@ -55,6 +49,7 @@ func processFile(lines []string) (Maps, []int) {
 			detail.length, _ = strconv.Atoi(numbers[2])
 			detail.srcEnd = detail.src + detail.length - 1
 			detail.dstEnd = detail.dst + detail.length - 1
+			detail.diff = detail.dst - detail.src
 			rows = append(rows, detail)
 		}
 		alm[mapName] = &rows
@@ -64,37 +59,83 @@ func processFile(lines []string) (Maps, []int) {
 }
 
 func part1(alm Maps, seeds []int) {
-	soilMap := alm["fertilizer-to-water"]
-	seedStart := 0
-	seedEnd := 0
-	soilStart := 0
-	soilEnd := 0
+	mapsList := [7]string {"seed-to-soil","soil-to-fertilizer","fertilizer-to-water","water-to-light","light-to-temperature","temperature-to-humidity","humidity-to-location" }
+	location := 0
+	for _, seed := range seeds {
+		input := seed
+		output := 0
+		found := false
+		
 
+		for idx, name := range mapsList {
+			subMap := alm[mapsList[idx]]
+
+			for _, item := range *subMap {
+				if input >= item.src && input <= item.srcEnd {
+					output = input + item.diff
+					//fmt.Printf("input: %v, %v: %v\n",input, name, output)
+					found = true
+				} 
+			}
 	
-	for idx, detail := range *soilMap {
-		if idx == 0 {
-			seedStart = detail.src
-			seedEnd = detail.src + detail.length - 1
-			soilStart = detail.dst
-			soilEnd = detail.dst + detail.length - 1
-		} else {
-			if detail.src < seedStart {
-				seedStart = detail.src
+			if !found {
+				output = input
+				//fmt.Printf("input: %v, %v: %v\n",input, name, output)
 			}
-			if detail.src + detail.length - 1 > seedEnd {
-				seedEnd = detail.src + detail.length - 1
+			found = false
+
+			if name == "humidity-to-location" && (location == 0 || output < location) {
+				location = output
 			}
-			if detail.dst < soilStart {
-				soilStart = detail.dst
-			}
-			if detail.dst + detail.length - 1 > soilEnd {
-				soilEnd = detail.dst + detail.length - 1 
+			input = output	
+		}	
+	}
+	fmt.Println(location)
+}
+
+func part2(alm Maps, seeds []int) {
+	mapsList := [7]string {"seed-to-soil","soil-to-fertilizer","fertilizer-to-water","water-to-light","light-to-temperature","temperature-to-humidity","humidity-to-location" }
+	location := 0
+	newSeeds := [][]int{}
+	for i:=0; i < len(seeds); i += 2 {
+		temp := []int{}
+		result := seeds[i:i+2]
+		temp = append(temp, result...)
+		newSeeds = append(newSeeds, temp)
+	}
+	fmt.Println(newSeeds)
+
+	for _, seedRange := range newSeeds {
+		for i := seedRange[0]; i < seedRange[0] + seedRange[1]; i++ {
+			input := i
+			output := 0
+			found := false			
+
+			for _, name := range mapsList {
+				subMap := alm[name]
+
+				for _, item := range *subMap {
+					if input >= item.src && input <= item.srcEnd {
+						output = input + item.diff
+						//fmt.Printf("input: %v, %v: %v\n",input, name, output)
+						found = true
+					} 
+				}
+		
+				if !found {
+					output = input
+					//fmt.Printf("input: %v, %v: %v\n",input, name, output)
+				}
+				found = false
+
+				if name == "humidity-to-location" && (location == 0 || output < location) {
+					location = output
+				}
+				input = output	
 			}
 		}
 	}
-
-	fmt.Println(soilMap)
-	fmt.Printf("seed range: %v - %v\nsoil range: %v - %v\n",seedStart,seedEnd,soilStart,soilEnd)
+	fmt.Println(location)
 }
 
 func main() {
@@ -102,5 +143,5 @@ func main() {
 	lines := readLines(file)
 	alm, seeds := processFile(lines)
 	part1(alm, seeds)
-
+	part2(alm, seeds)
 }
