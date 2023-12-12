@@ -11,6 +11,8 @@ type Detail struct {
 	src    int
 	dst    int
 	length int
+	srcEnd int
+	dstEnd int
 }
 
 type Maps map[string]*[]Detail
@@ -51,6 +53,8 @@ func processFile(lines []string) (Maps, []int) {
 			detail.dst, _ = strconv.Atoi(numbers[0])
 			detail.src, _ = strconv.Atoi(numbers[1])
 			detail.length, _ = strconv.Atoi(numbers[2])
+			detail.srcEnd = detail.src + detail.length - 1
+			detail.dstEnd = detail.dst + detail.length - 1
 			rows = append(rows, detail)
 		}
 		alm[mapName] = &rows
@@ -60,16 +64,37 @@ func processFile(lines []string) (Maps, []int) {
 }
 
 func part1(alm Maps, seeds []int) {
-	//seedStart := 0
-	soilMap := alm["seed-to-soil"]
-	for _, detail := range *soilMap {
-		fmt.Println(detail)
+	soilMap := alm["fertilizer-to-water"]
+	seedStart := 0
+	seedEnd := 0
+	soilStart := 0
+	soilEnd := 0
+
+	
+	for idx, detail := range *soilMap {
+		if idx == 0 {
+			seedStart = detail.src
+			seedEnd = detail.src + detail.length - 1
+			soilStart = detail.dst
+			soilEnd = detail.dst + detail.length - 1
+		} else {
+			if detail.src < seedStart {
+				seedStart = detail.src
+			}
+			if detail.src + detail.length - 1 > seedEnd {
+				seedEnd = detail.src + detail.length - 1
+			}
+			if detail.dst < soilStart {
+				soilStart = detail.dst
+			}
+			if detail.dst + detail.length - 1 > soilEnd {
+				soilEnd = detail.dst + detail.length - 1 
+			}
+		}
 	}
 
-	fmt.Println(seeds)
-	for key := range alm {
-		fmt.Println(key)
-	}
+	fmt.Println(soilMap)
+	fmt.Printf("seed range: %v - %v\nsoil range: %v - %v\n",seedStart,seedEnd,soilStart,soilEnd)
 }
 
 func main() {
