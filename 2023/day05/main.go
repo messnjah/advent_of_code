@@ -19,18 +19,6 @@ type Detail struct {
 
 type Maps map[string]*[]Detail
 
-/* func (this Maps) Len() int {
-    return len(this)
-}
-
-func (this Maps) Less(i, j int) bool {
-    return this[i].src > this[j].src
-}
-
-func (e employeeList) Swap(i, j int) {
-    e[i], e[j] = e[j], e[i]
-} */
-
 func readLines(filename string) []string {
 	file, err := os.ReadFile(filename)
 	if err != nil {
@@ -175,11 +163,14 @@ func part2Optimized(alm Maps, seeds []int) {
 
 			for _, item := range *subMap {
 				if seedRange[0] >= item.src && seedRange[1] <= item.srcEnd {
-					//output = input + item.diff
-					//fmt.Printf("input: %v, %v: %v\n",input, name, output)
-					//found = true
-					fmt.Println(true)
-					fmt.Println(item)
+					
+					for i := seedRange[0]; i < seedRange[1]; i++ {
+
+						//output = input + item.diff
+						//fmt.Printf("input: %v, %v: %v\n",input, name, output)
+						//found = true
+
+					}
 				} 
 			}
 	

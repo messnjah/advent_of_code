@@ -116,3 +116,10 @@ In the above example, the lowest location number can be obtained from seed numbe
 Consider all of the initial seed numbers listed in the ranges on the first line of the almanac. What is the lowest location number that corresponds to any of the initial seed numbers?
 
 Your puzzle answer was 99751240.
+
+
+### Optimization Notes
+
+- https://golangbyexample.com/sort-custom-struct-collection-golang/
+- https://github.com/silverark/advent-of-code-2023/tree/master
+- https://www.reddit.com/r/adventofcode/comments/18buwiz/2023_day_5_part_2_can_someone_explain_a_more/
