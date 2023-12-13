@@ -123,3 +123,4 @@ Your puzzle answer was 99751240.
 - https://golangbyexample.com/sort-custom-struct-collection-golang/
 - https://github.com/silverark/advent-of-code-2023/tree/master
 - https://www.reddit.com/r/adventofcode/comments/18buwiz/2023_day_5_part_2_can_someone_explain_a_more/
+- Create chains connecting the different map items
