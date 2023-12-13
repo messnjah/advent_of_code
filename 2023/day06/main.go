@@ -34,9 +34,6 @@ func processFile(lines []string) []Race {
 }
 
 func part1(races []Race) {
-	// RaceTime - buttonHoldTime = TravelTime
-	// buttonHoldTime * TravelTime = Distance
-	// How to find all variations?
 	results := []int{}
 	for _, race := range races {
 		wins := 0
@@ -57,10 +54,32 @@ func part1(races []Race) {
 	fmt.Println(output)
 }
 
+func part2(races []Race) {
+	timeTotal := ""
+	distanceTotal := ""
+	for _, race := range races {
+		outTime := strconv.Itoa(race.time)
+		outDist := strconv.Itoa(race.distance)
+		timeTotal += outTime
+		distanceTotal += outDist
+	}
+	fmt.Println(timeTotal + " " + distanceTotal)
+	timeInt, _ := strconv.Atoi(timeTotal)
+	distInt, _ := strconv.Atoi(distanceTotal)
+	wins := 0
+	for i := 1; i < timeInt; i++ {
+		distance := i * (timeInt - i)
+		if distance > distInt {
+			wins++
+		}
+	}
+	fmt.Println(wins)
+}
+
 func main() {
 	file := "input.txt"
 	lines := readLines(file)
 	races := processFile(lines)
 	part1(races)
-
+	part2(races)
 }
