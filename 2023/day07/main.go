@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -9,118 +10,112 @@ import (
 	"advent_of_code/util"
 )
 
+var letterMap = map[string]int{
+	"A": 14,
+	"K": 13,
+	"Q": 12,
+	"J": 11,
+	"T": 10,
+}
+
 type Hand struct {
 	cards  string
 	bet    int
 	order  []int
-	counts []int
-	rank   int
+	strength int
 }
 
-func processFile(lines []string) []Hand {
+func handStrength(hand Hand) int {
+	cardCounts := []int{}
+	for _, card := range hand.cards {
+		char := strings.Count(hand.cards, string(card))
+		cardCounts = append(cardCounts, char)
+	}
+
+	if slices.Contains(cardCounts,5) {
+		return 6
+	} else if slices.Contains(cardCounts,4) {
+		return 5
+	} else if slices.Contains(cardCounts,3) {
+		if slices.Contains(cardCounts, 2) {
+			return 4
+		} else {
+		return 3
+		}
+	} else if slices.Contains(cardCounts,2) {
+		twos := 0
+		for _, item := range cardCounts {
+			if item == 2 {
+				twos++
+			}
+		}
+		if twos == 4 {
+			return 2
+		} else {
+		return 1
+		}
+	} else {
+	return 0
+	}
+}
+
+func cardOrder(hand Hand) []int {
+	output := []int{}
+	for _, char := range hand.cards {
+		if value, exists := letterMap[string(char)]; exists {
+			output = append(output, value)
+		} else {
+			num, _ := strconv.Atoi(string(char))
+			output = append(output, num)
+		}
+	}
+	return output
+}
+
+func processFile(lines []string) {
 	hands := []Hand{}
+
 	for _, line := range lines {
 		hand := Hand{}
-		items := strings.Fields(line)
-		hand.cards = items[0]
-		hand.bet, _ = strconv.Atoi(items[1])
-
-		for _, card := range strings.Split(hand.cards, "") {
-			cardNum := 0
-			switch card {
-			case "A":
-				cardNum = 14
-			case "K":
-				cardNum = 13
-			case "Q":
-				cardNum = 12
-			case "J":
-				cardNum = 11
-			case "T":
-				cardNum = 10
-			default:
-				cardNum, _ = strconv.Atoi(card)
-			}
-			hand.order = append(hand.order, cardNum)
-			count := strings.Count(hand.cards, card)
-			hand.counts = append(hand.counts, count)
-		}
-		sort.SliceStable(hand.counts, func(i, j int) bool {
-			return hand.counts[i] > hand.counts[j]
-		})
-		hand.rank = getHandRank(hand)
+		fields := strings.Fields(line)
+		hand.cards  = fields[0] 
+		hand.bet, _ = strconv.Atoi(fields[1])
+		hand.order = cardOrder(hand)
+		hand.strength = handStrength(hand)
 		hands = append(hands, hand)
 	}
-	sort.SliceStable(hands, func(i, j int) bool {
-		return hands[i].rank > hands[j].rank
-	})
-	return hands
-}
 
-func getHandRank(hand Hand) int {
-	rank := 0
-	switch hand.counts[0] {
-	case 5:
-		rank = 7
-	case 4:
-		rank = 6
-	case 3:
-		if hand.counts[3] == 2 {
-			rank = 5
-		} else {
-			rank = 4
-		}
-	case 2:
-		if hand.counts[2] == 2 {
-			rank = 3
-		} else {
-			rank = 2
-		}
-	default:
-		rank = 1
-	}
-	return rank
-}
-
-func part1(hands []Hand) {
-	length := len(hands)
-	fmt.Println(length)
-	output := 0
-	count := 1
-	for i := 1; i <= 7; i++ {
-		subSlice := []Hand{}
+	total := 0
+	count := 0
+	for rank := 0; rank < 7; rank++ {
+		group := []Hand{}
 		for _, hand := range hands {
-			if hand.rank != i {
-				continue
+			if rank == hand.strength {
+				group = append(group, hand)
 			}
-			subSlice = append(subSlice, hand)
 		}
-		sort.SliceStable(subSlice, func(i, j int) bool {
-			if subSlice[i].order[0] != subSlice[j].order[0] {
-				return subSlice[i].order[0] < subSlice[j].order[0]
-			} else {
-				for x := 1; subSlice[i].order[x] == subSlice[j].order[x]; x++ {
-					if subSlice[i].order[x] != subSlice[j].order[x] {
-						return subSlice[i].order[x] < subSlice[j].order[x]
-					}
-				}
-				return subSlice[i].order[1] < subSlice[j].order[1]
+		sort.SliceStable(group, func(i, j int) bool {
+			switch slices.Compare(group[i].order,group[j].order) {
+			case -1:
+				return true
+			case 1:
+				return false
+			default:
+				return false
 			}
-
 		})
-
-		fmt.Println(subSlice)
-		for _, card := range subSlice {
-			fmt.Printf("%v: %v\n", count, card.bet)
-			output += card.bet * count
+		//fmt.Println(group)
+		for _, item := range group {
 			count++
+			total += item.bet * count
+			fmt.Printf("Rank: %v Cards: %v Total: %v\n",count,item,total)
 		}
-	}
-	fmt.Println(output)
+	} 
+	fmt.Println(count)
+	fmt.Println(total)
 }
 
 func main() {
-	lines := util.GetFile("test.txt")
-	hands := processFile(lines)
-	part1(hands) // Check highest number only cases
+	lines := util.GetFile("input.txt")
+	processFile(lines)
 }
