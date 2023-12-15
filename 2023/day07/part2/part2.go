@@ -23,7 +23,6 @@ type Hand struct {
 	bet    int
 	order  []int
 	strength int
-	wild int
 }
 
 func handStrength(hand Hand) int {
@@ -33,7 +32,7 @@ func handStrength(hand Hand) int {
 		cardCounts = append(cardCounts, char)
 	}
 
-	if slices.Contains(cardCounts,5) || (slices.Contains(cardCounts,4) && hand.wild == 1) {
+	if slices.Contains(cardCounts,5) {
 		return 6
 	} else if slices.Contains(cardCounts,4) {
 		return 5
@@ -73,15 +72,71 @@ func cardOrder(hand Hand) []int {
 	return output
 }
 
-func applyWilds(hand Hand) {
+func applyWilds(hand Hand) int {
 	wild := 0
-	for _, item := range hand.order {
-		if item == 1 {
-			wild++
+		for _, item := range hand.order {
+			if item == 1 {
+				wild++
+			}
+		}
+	//fmt.Printf("Wilds: %v, Cards: %v\n", wild, hand.order)
+	if wild == 0 {
+		return hand.strength
+	}
+
+	cardCounts := []int{}
+	for _, card := range hand.cards {
+		char := strings.Count(hand.cards, string(card))
+		cardCounts = append(cardCounts, char)
+	}
+	//fmt.Printf("Counts: %v, Cards: %v\n", cardCounts, hand.order)
+	switch wild {
+	case 4:
+		return 6
+	case 3:
+		if slices.Contains(cardCounts,2) { // 5 kind
+			return 6
+		} else { // 4 kind
+			return 5 
+		}
+	case 2:
+		if slices.Contains(cardCounts,3) { // 5 kind
+			return 6
+		} else if slices.Contains(cardCounts,2) {
+			twos := 0
+			for _, item := range cardCounts {
+				if item == 2 { 
+					twos++
+				}
+			}
+			if twos == 4 { // 4 kind
+				return 5
+			} else { // 3 kind
+				return 3
+			}
+		}
+	case 1:
+		if slices.Contains(cardCounts,4) { // 5 kind
+			return 6
+		} else if slices.Contains(cardCounts,3) { // 4 kind
+			return 5
+		} else if slices.Contains(cardCounts,2) {
+			twos := 0
+			for _, item := range cardCounts {
+				if item == 2 { 
+					twos++
+				}
+			}
+			if twos == 4 { // Full House
+				return 4
+			} else { // 3 kind
+				return 3
+			}
+		} else if slices.Contains(cardCounts,1) { // pair
+			return 1
 		}
 	}
-	// Add wilds to strength
-
+	return hand.strength
 }
 
 func processFile(lines []string) {
@@ -93,16 +148,8 @@ func processFile(lines []string) {
 		hand.cards  = fields[0] 
 		hand.bet, _ = strconv.Atoi(fields[1])
 		hand.order = cardOrder(hand)
-		wild := 0
-		for _, item := range hand.order {
-			if item == 1 {
-				wild++
-			}
-		}
-		hand.wild = wild
 		hand.strength = handStrength(hand)
-		applyWilds(hand)
-		
+		hand.strength = applyWilds(hand)
 		hands = append(hands, hand)
 	}
 
@@ -129,7 +176,10 @@ func processFile(lines []string) {
 		for _, item := range group {
 			count++
 			total += item.bet * count
-			fmt.Printf("Rank: %v Cards: %v Total: %v\n",count,item,total)
+			if slices.Contains(item.order,1) {
+				fmt.Printf("Rank: %v Cards: %v Total: %v\n",count,item,total)
+			}
+			
 		}
 	} 
 	fmt.Println(count)
@@ -137,6 +187,6 @@ func processFile(lines []string) {
 }
 
 func main() {
-	lines := util.GetFile("test.txt")
+	lines := util.GetFile("input.txt")
 	processFile(lines)
 }
