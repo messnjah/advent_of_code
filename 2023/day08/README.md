@@ -64,3 +64,8 @@ Step 6: You choose all of the right paths, leading you to 11Z and 22Z.
 So, in this example, you end up entirely on nodes that end in Z after 6 steps.
 
 Simultaneously start on every node that ends with A. How many steps does it take before you're only on nodes that end with Z?
+
+## Notes
+- https://github.com/omotto/AdventOfCode2023/blob/main/src/day08/main.go
+
+Your puzzle answer was 11795205644011.
