@@ -188,3 +188,10 @@ L7JLJL-JLJLJL--JLJ.L
 In this last example, 10 tiles are enclosed by the loop.
 
 Figure out whether you have time to search for the nest by calculating the area within the loop. How many tiles are enclosed by the loop?
+
+## Notes
+
+- **https://github.com/ianmihura/advent23/blob/master/day_10/day_10.go**
+- https://en.wikipedia.org/wiki/Shoelace_formula
+- https://en.wikipedia.org/wiki/Pick's_theorem
+- https://stackoverflow.com/questions/72445066/go-sort-slice-using-foreign-slice-to-sort

@@ -3,6 +3,7 @@ package main
 import (
 	"advent_of_code/util"
 	"fmt"
+	"time"
 )
 
 var Pipes = map[string][]Point {
@@ -52,14 +53,6 @@ func startPipe (grid Grid, start Point) []Point {
 }
 
 func (this *Node) stepsFromStart (grid Grid, start, previous Point, steps int) {
-	/* if this.id == start {
-		this.Steps = steps
-		this.Counted = true
-	} else {
-		steps++
-		this.Steps = steps
-		this.Counted = true
-	} */
 
 	steps++
 	this.Steps = steps
@@ -68,10 +61,13 @@ func (this *Node) stepsFromStart (grid Grid, start, previous Point, steps int) {
 
 		next := this.id.checkPoint(edge)
 		if next != start && next != previous {
-			fmt.Printf("Previous: %v, Current: %v, Next: %v\n", previous, this.id, next)
+			//fmt.Printf("Previous: %v, Current: %v, Next: %v\n", previous, this.id, next)
 			grid[next].stepsFromStart(grid, start, this.id, steps)
 		} else if next == start && next != previous {
 			grid[start].Steps = steps
+		}
+		if this.id == start {
+			break
 		}
 	}
 }
@@ -103,6 +99,8 @@ func processFile(lines []string) {
 }
 
 func main() {
-	lines := util.GetFile("../input.txt")
+	start := time.Now()
+	lines := util.GetFile("../test.txt")
 	processFile(lines)
+	fmt.Println(time.Since(start))
 }
