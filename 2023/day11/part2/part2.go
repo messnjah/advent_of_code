@@ -50,7 +50,7 @@ func processFile(lines []string) {
 	emptyRow, emptyCol := addSpace(lines) //TODO: Dont modify grid, track the indices
 	fmt.Println(emptyRow)
 	fmt.Println(emptyCol)
-	//scale := 2
+	scale := 9
 	
 	galaxies := []Point{}
 	for y, line := range lines {
@@ -79,18 +79,18 @@ func processFile(lines []string) {
 
 			for _, row := range emptyRow {
 				if int(minY) < row && int(maxY) > row {
-					scaleY++
+					scaleY += scale
 				}
 			}
 			for _, col := range emptyCol {
 				if int(minX) < col && int(maxX) > col {
-					scaleX++
+					scaleX += scale
 				}
 			}
 
 			a := Abs(x.X - point.X) + scaleX
 			b := Abs(x.Y - point.Y) + scaleY
-			//fmt.Printf("%v: Points: %v -> %v, Value: %v, YScale: %v, XScale: %v\n",cnt,point,x,a+b,scaleY,scaleX)
+			fmt.Printf("%v: Points: %v -> %v, Value: %v, YScale: %v, XScale: %v\n",cnt,point,x,a+b,scaleY,scaleX)
 			total += (a + b)
 			//fmt.Println(total)
 			cnt++
@@ -101,7 +101,7 @@ func processFile(lines []string) {
 
 func main() {
 	start := time.Now()
-	lines := util.GetFile("../input.txt")
+	lines := util.GetFile("../test.txt")
 	processFile(lines)
 	fmt.Println(time.Since(start))
 }
