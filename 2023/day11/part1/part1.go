@@ -3,6 +3,7 @@ package main
 import (
 	"advent_of_code/util"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 )
@@ -18,28 +19,38 @@ func Abs(x int) int {
 	return x
 }
 
-func addSpace (lines []string) []string {
-	indices := []int{}
+func addSpace (lines []string) ([]int, []int) {
+	//height := len(lines)
+	emptyRow := []int{}
+	emptyCol := []int{}
+
 	for y, line := range lines {
 		if !strings.Contains(line, "#") {
-			indices = append(indices, y)
+			emptyRow = append(emptyRow, y)
 		}
-	}
-	for idx, i := range indices {
-		if idx == 0 {
-			lines = append(lines[:i], lines[i:]... )
-		} else {
-			i++
-		}
-		lines = append(lines[:i+1], lines[i:]... )
 	}
 
-	return lines
+	for x, _ := range lines[0] {
+		empty := true
+		for y, _ := range lines {
+			if lines[y][x] == 35 {
+				empty = false
+			}
+		}
+		if empty {
+			emptyCol = append(emptyCol, x)
+		}
+	}
+
+	return emptyRow, emptyCol
 }
 
 func processFile(lines []string) {
 	//fmt.Println(lines)
-	lines = addSpace(lines) //TODO: Need to expand columns... FML
+	emptyRow, emptyCol := addSpace(lines) //TODO: Dont modify grid, track the indices
+	fmt.Println(emptyRow)
+	fmt.Println(emptyCol)
+	//scale := 2
 	
 	galaxies := []Point{}
 	for y, line := range lines {
@@ -50,18 +61,36 @@ func processFile(lines []string) {
 		}		
 	}
 	//fmt.Println(lines)
-	for _, line := range lines {
-		fmt.Println(line)
-	}
+	// for _, line := range lines {
+	// 	fmt.Println(line)
+	// }
 	fmt.Println(galaxies)
 
 	total := 0
 	cnt:=0
 	for i, point := range galaxies {
 		for _, x := range galaxies[i+1:] {
-			a := Abs(x.X - point.X)
-			b := Abs(x.Y - point.Y)
-			fmt.Printf("%v: Points: %v -> %v, Value: %v\n",cnt,point,x,Abs(a)+Abs(b))
+			minY := math.Min(float64(point.Y),float64(x.Y))
+			maxY := math.Max(float64(point.Y),float64(x.Y))
+			minX := math.Min(float64(point.X),float64(x.X))
+			maxX := math.Max(float64(point.X),float64(x.X))
+			scaleY := 0
+			scaleX := 0
+
+			for _, row := range emptyRow {
+				if int(minY) < row && int(maxY) > row {
+					scaleY++
+				}
+			}
+			for _, col := range emptyCol {
+				if int(minX) < col && int(maxX) > col {
+					scaleX++
+				}
+			}
+
+			a := Abs(x.X - point.X) + scaleX
+			b := Abs(x.Y - point.Y) + scaleY
+			//fmt.Printf("%v: Points: %v -> %v, Value: %v, YScale: %v, XScale: %v\n",cnt,point,x,a+b,scaleY,scaleX)
 			total += (a + b)
 			//fmt.Println(total)
 			cnt++
@@ -72,7 +101,7 @@ func processFile(lines []string) {
 
 func main() {
 	start := time.Now()
-	lines := util.GetFile("../test.txt")
+	lines := util.GetFile("../input.txt")
 	processFile(lines)
 	fmt.Println(time.Since(start))
 }
